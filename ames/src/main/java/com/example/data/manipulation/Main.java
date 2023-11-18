@@ -12,8 +12,7 @@ public class Main {
 
         DataManipulator dataManipulator = new DataManipulator();
         try {
-            Table table = dataManipulator.getTable(args[0]);
-            System.out.println(table.print());
+            dataManipulator.dataManipulation(args[0]);
         } catch (DataReadingException e) {
             System.err.println("Failed to process data: " + e.getMessage());
         }
