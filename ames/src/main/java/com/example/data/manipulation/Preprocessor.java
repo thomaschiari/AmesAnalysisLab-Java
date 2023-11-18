@@ -2,10 +2,13 @@ package com.example.data.manipulation;
 
 import tech.tablesaw.api.Table;
 import tech.tablesaw.api.StringColumn;
+import tech.tablesaw.columns.Column;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.List;
+import java.util.ArrayList;
 
 public class Preprocessor {
 
@@ -16,6 +19,18 @@ public class Preprocessor {
         }
         Optional<Map.Entry<String, Integer>> maxEntry = frequencyMap.entrySet().stream().max(Map.Entry.comparingByValue());
         return maxEntry.get().getKey();
+    }
+
+    public List<String> checkForNulls(Table df) {
+        List <String> nullColumns = new ArrayList<String>();
+        for (var column : df.columns()) {
+            long nullCount = column.countMissing();
+            if (nullCount > 0) {
+                System.out.println("Coluna: " + column.name() + " - Valores Nulos: " + nullCount);
+                nullColumns.add(column.name());
+            }
+        }
+        return nullColumns;
     }
 
     private Table fillNullValues(Table data) {
@@ -46,6 +61,24 @@ public class Preprocessor {
 
     public Table preprocess(Table data) {
         Table filledData = fillNullValues(data);
+        List<String> nullColumns = checkForNulls(filledData);
+        List<String> catFeatures = new ArrayList<String>();
+        List<String> numFeatures = new ArrayList<String>();
+
+        for (String column : nullColumns) {
+            Column<?> columns = filledData.column(column);
+            if (columns.type().name().equals("STRING")) {
+                catFeatures.add(column);
+            } else {
+                numFeatures.add(column);
+            }
+        }
+
+        System.out.println("Features Categóricas: " + catFeatures);
+        System.out.println("Features Numéricas: " + numFeatures);
+
+        KnnImputer.impute(filledData);
+
         return filledData;
     }
 

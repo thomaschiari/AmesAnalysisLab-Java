@@ -18,7 +18,7 @@ public class DataManipulator {
         Preprocessor preprocessor = new Preprocessor();
         Table preprocessedData = preprocessor.preprocess(data);
         System.out.println(preprocessedData.first(5));
-        DataNullCheck.checkForNulls(preprocessedData);
+        System.out.println(preprocessedData.structure());
     }
 
 }
